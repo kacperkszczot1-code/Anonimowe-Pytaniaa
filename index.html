@@ -2,79 +2,81 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Odkryj jedno pytanie</title>
-
+<title>Odkryj swoje pytanie</title>
 <style>
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f0f0f;
-  color: #fff;
+  font-family: sans-serif;
   text-align: center;
+  padding: 30px;
 }
 
-h1 {
-  margin-top: 40px;
-}
-
-.grid {
-  max-width: 900px;
-  margin: 50px auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
-}
-
-.tile {
-  background: #1e1e1e;
-  border-radius: 14px;
-  padding: 50px 10px;
-  font-size: 28px;
+.kafelek {
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  margin: 15px auto;
+  background: #3498db;
+  color: white;
+  border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s;
-  user-select: none;
+  transition: background 0.3s;
 }
 
-.tile:hover {
-  background: #2a2a2a;
-  transform: scale(1.05);
+.kafelek.zablokowany {
+  background: #7f8c8d;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 </head>
-
 <body>
 
-<h1>Możesz odkryć tylko jeden kafelek</h1>
-<p>Z jednego IP tylko jedno pytanie</p>
+<h2>Możesz odkryć tylko jedno pytanie.</h2>
 
-<div class="grid">
-  <div class="tile" onclick="reveal(1)">?</div>
-  <div class="tile" onclick="reveal(2)">?</div>
-  <div class="tile" onclick="reveal(3)">?</div>
-  <div class="tile" onclick="reveal(4)">?</div>
-  <div class="tile" onclick="reveal(5)">?</div>
-  <div class="tile" onclick="reveal(6)">?</div>
-  <div class="tile" onclick="reveal(7)">?</div>
-  <div class="tile" onclick="reveal(8)">?</div>
-  <div class="tile" onclick="reveal(9)">?</div>
-  <div class="tile" onclick="reveal(10)">?</div>
-</div>
+<div class="kafelek" data-id="1">Gdybyś miała/miał opisać te 4 lata jednym słowem – jakie by to było i dlaczego?</div>
+<div class="kafelek" data-id="2">Jak to się zaczęło i dlaczego się zaczęło?</div>
+<div class="kafelek" data-id="3">Jak zmieniło się Twoje podejście do ludzi przez te 4 lata?</div>
+<div class="kafelek" data-id="4">Kto z tej grupy najbardziej Cię zaskoczył przez te lata?</div>
+<div class="kafelek" data-id="5">Jaki moment chciałabyś/chciałbyś przeżyć jeszcze raz dokładnie tak samo?</div>
+<div class="kafelek" data-id="6">A jaki moment był najtrudniejszy?</div>
+<div class="kafelek" data-id="7">Czego nauczyły Cię te 4 lata, jakiej cechy?</div>
+<div class="kafelek" data-id="8">Co będzie Ci najbardziej brakowało po liceum?</div>
+<div class="kafelek" data-id="9">Jak myślisz – czy za 10 lat dalej będziemy się znać? W jakiej formie?</div>
 
 <script>
-function reveal(id) {
-  fetch("https://TWOJ-WORKER.cloudflareworkers.dev/reveal?id=" + id)
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        alert(data.error)
-      } else {
-        alert(data.question)
-        window.location.href = data.redirect
-      }
-    })
+const kafelki = document.querySelectorAll('.kafelek');
+const wybrany = localStorage.getItem('wybranyKafelek');
+
+// jeśli już wybrał wcześniej
+if (wybrany) {
+  kafelki.forEach(k => {
+    if (k.dataset.id === wybrany) {
+      k.textContent = "To jest Twoje pytanie. Reszta została zamknięta.";
+    } else {
+      k.textContent = "Nie możesz już otworzyć innych pytań.";
+    }
+    k.classList.add('zablokowany');
+  });
 }
+
+// kliknięcie
+kafelki.forEach(k => {
+  k.addEventListener('click', () => {
+    if (!localStorage.getItem('wybranyKafelek')) {
+      localStorage.setItem('wybranyKafelek', k.dataset.id);
+
+      kafelki.forEach(other => {
+        if (other === k) {
+          other.textContent = "To jest Twoje pytanie. Reszta została zamknięta.";
+        } else {
+          other.textContent = "Za późno — można było wybrać tylko jedno.";
+        }
+        other.classList.add('zablokowany');
+      });
+    }
+  });
+});
 </script>
 
 </body>
 </html>
-
