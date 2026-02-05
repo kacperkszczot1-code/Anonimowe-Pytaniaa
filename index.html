@@ -23,18 +23,23 @@
 <div class="counter" id="counter"></div>
 
 <script>
-  // 🔹 TU WKLEJ SWOJE 20 LINKÓW
+  // 🔹 Twoje linki do Privnote (nowy link jako pierwszy)
   const ALL_LINKS = [
-    "https://link1.example",
-    "https://link2.example",
-    "https://link3.example",
-    "https://link4.example"
-    // ...
+    "https://privnote.com/VFlptO7G#KRIIbMJMa",
+    "https://privnote.com/dwpikTlV#2rso1ZssH",
+    "https://privnote.com/VwSqZf0U#8kzgIKAAY",
+    "https://privnote.com/PyDv5LPm#f0QfZYQOa",
+    "https://privnote.com/YoSJuPFv#ju319yX2f",
+    "https://privnote.com/Kj6bZ61x#OQK792Xfw",
+    "https://privnote.com/N0QJ16nf#l7lFYulII",
+    "https://privnote.com/0ww8h5WH#DMlYBZ1vh",
+    "https://privnote.com/HTU14mlc#1myhqTU7c",
+    "https://privnote.com/PUz3DMpE#Xe8ILEtBj"
   ];
 
   const STORAGE_KEY = "unused_links";
 
-  // Jeśli to pierwsze wejście – zapisz wszystkie linki
+  // jeśli pierwsze wejście, zapisujemy wszystkie linki
   if (!localStorage.getItem(STORAGE_KEY)) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(ALL_LINKS));
   }
@@ -48,7 +53,7 @@
     statusEl.textContent = "Brak dostępnych linków.";
     counterEl.textContent = "Pozostało: 0";
   } else {
-    // Losowanie
+    // Losowanie linku
     const index = Math.floor(Math.random() * unusedLinks.length);
     const chosenLink = unusedLinks[index];
 
@@ -58,10 +63,10 @@
 
     counterEl.textContent = "Pozostało linków: " + unusedLinks.length;
 
-    // Automatyczne przekierowanie
+    // Automatyczne przekierowanie po 1,5 sekundy
     setTimeout(() => {
       window.location.href = chosenLink;
-    }, 1500); // 1.5 sekundy
+    }, 1500);
   }
 </script>
 
