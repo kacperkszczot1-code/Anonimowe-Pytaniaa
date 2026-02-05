@@ -2,73 +2,79 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<title>Losowy link</title>
+<title>Odkryj jedno pytanie</title>
+
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 60px;
-  }
-  .counter {
-    margin-top: 20px;
-    font-size: 16px;
-    color: #555;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 40px;
+}
+
+.grid {
+  max-width: 900px;
+  margin: 50px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.tile {
+  background: #1e1e1e;
+  border-radius: 14px;
+  padding: 50px 10px;
+  font-size: 28px;
+  cursor: pointer;
+  transition: 0.2s;
+  user-select: none;
+}
+
+.tile:hover {
+  background: #2a2a2a;
+  transform: scale(1.05);
+}
 </style>
 </head>
+
 <body>
 
-<h1>Przekierowujemy Cię dalej…</h1>
-<p id="status"></p>
-<div class="counter" id="counter"></div>
+<h1>Możesz odkryć tylko jeden kafelek</h1>
+<p>Z jednego IP tylko jedno pytanie</p>
+
+<div class="grid">
+  <div class="tile" onclick="reveal(1)">?</div>
+  <div class="tile" onclick="reveal(2)">?</div>
+  <div class="tile" onclick="reveal(3)">?</div>
+  <div class="tile" onclick="reveal(4)">?</div>
+  <div class="tile" onclick="reveal(5)">?</div>
+  <div class="tile" onclick="reveal(6)">?</div>
+  <div class="tile" onclick="reveal(7)">?</div>
+  <div class="tile" onclick="reveal(8)">?</div>
+  <div class="tile" onclick="reveal(9)">?</div>
+  <div class="tile" onclick="reveal(10)">?</div>
+</div>
 
 <script>
-  // 🔹 Twoje linki do Privnote (nowy link jako pierwszy)
-  const ALL_LINKS = [
-    "https://privnote.com/VFlptO7G#KRIIbMJMa",
-    "https://privnote.com/dwpikTlV#2rso1ZssH",
-    "https://privnote.com/VwSqZf0U#8kzgIKAAY",
-    "https://privnote.com/PyDv5LPm#f0QfZYQOa",
-    "https://privnote.com/YoSJuPFv#ju319yX2f",
-    "https://privnote.com/Kj6bZ61x#OQK792Xfw",
-    "https://privnote.com/N0QJ16nf#l7lFYulII",
-    "https://privnote.com/0ww8h5WH#DMlYBZ1vh",
-    "https://privnote.com/HTU14mlc#1myhqTU7c",
-    "https://privnote.com/PUz3DMpE#Xe8ILEtBj"
-  ];
-
-  const STORAGE_KEY = "unused_links";
-
-  // jeśli pierwsze wejście, zapisujemy wszystkie linki
-  if (!localStorage.getItem(STORAGE_KEY)) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ALL_LINKS));
-  }
-
-  let unusedLinks = JSON.parse(localStorage.getItem(STORAGE_KEY));
-
-  const statusEl = document.getElementById("status");
-  const counterEl = document.getElementById("counter");
-
-  if (unusedLinks.length === 0) {
-    statusEl.textContent = "Brak dostępnych linków.";
-    counterEl.textContent = "Pozostało: 0";
-  } else {
-    // Losowanie linku
-    const index = Math.floor(Math.random() * unusedLinks.length);
-    const chosenLink = unusedLinks[index];
-
-    // Usuń użyty link
-    unusedLinks.splice(index, 1);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(unusedLinks));
-
-    counterEl.textContent = "Pozostało linków: " + unusedLinks.length;
-
-    // Automatyczne przekierowanie po 1,5 sekundy
-    setTimeout(() => {
-      window.location.href = chosenLink;
-    }, 1500);
-  }
+function reveal(id) {
+  fetch("https://TWOJ-WORKER.cloudflareworkers.dev/reveal?id=" + id)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error)
+      } else {
+        alert(data.question)
+        window.location.href = data.redirect
+      }
+    })
+}
 </script>
 
 </body>
 </html>
+
