@@ -14,23 +14,26 @@ body {
 .kafelek {
   width: 90%;
   max-width: 600px;
-  padding: 20px;
+  padding: 30px;
   margin: 15px auto;
   background: #3498db;
   color: white;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 22px;
+  transition: background 0.3s, transform 0.2s;
 }
 
 .kafelek:hover {
   background: #2980b9;
+  transform: scale(1.02);
 }
 
 .kafelek.zablokowany {
   background: #7f8c8d;
   cursor: not-allowed;
   pointer-events: none;
+  transform: none;
 }
 </style>
 </head>
@@ -39,15 +42,15 @@ body {
 
 <h2 id="naglowek">Możesz odkryć tylko jedno pytanie dziennie.</h2>
 
-<div class="kafelek" data-id="1">Gdybyś miała/miał opisać te 4 lata jednym słowem – jakie by to było i dlaczego?</div>
-<div class="kafelek" data-id="2">Jak to się zaczęło i dlaczego się zaczęło?</div>
-<div class="kafelek" data-id="3">Jak zmieniło się Twoje podejście do ludzi przez te 4 lata?</div>
-<div class="kafelek" data-id="4">Kto z tej grupy najbardziej Cię zaskoczył przez te lata?</div>
-<div class="kafelek" data-id="5">Jaki moment chciałabyś/chciałbyś przeżyć jeszcze raz dokładnie tak samo?</div>
-<div class="kafelek" data-id="6">A jaki moment był najtrudniejszy?</div>
-<div class="kafelek" data-id="7">Czego nauczyły Cię te 4 lata, jakiej cechy?</div>
-<div class="kafelek" data-id="8">Co będzie Ci najbardziej brakowało po liceum?</div>
-<div class="kafelek" data-id="9">Jak myślisz – czy za 10 lat dalej będziemy się znać? W jakiej formie?</div>
+<div class="kafelek" data-id="1" data-question="Gdybyś miała/miał opisać te 4 lata jednym słowem – jakie by to było i dlaczego?">???</div>
+<div class="kafelek" data-id="2" data-question="Jak to się zaczęło i dlaczego się zaczęło?">???</div>
+<div class="kafelek" data-id="3" data-question="Jak zmieniło się Twoje podejście do ludzi przez te 4 lata?">???</div>
+<div class="kafelek" data-id="4" data-question="Kto z tej grupy najbardziej Cię zaskoczył przez te lata?">???</div>
+<div class="kafelek" data-id="5" data-question="Jaki moment chciałabyś/chciałbyś przeżyć jeszcze raz dokładnie tak samo?">???</div>
+<div class="kafelek" data-id="6" data-question="A jaki moment był najtrudniejszy?">???</div>
+<div class="kafelek" data-id="7" data-question="Czego nauczyły Cię te 4 lata, jakiej cechy?">???</div>
+<div class="kafelek" data-id="8" data-question="Co będzie Ci najbardziej brakowało po liceum?">???</div>
+<div class="kafelek" data-id="9" data-question="Jak myślisz – czy za 10 lat dalej będziemy się znać? W jakiej formie?">???</div>
 
 <script>
 const kafelki = document.querySelectorAll('.kafelek');
@@ -57,7 +60,7 @@ const TERAZ = Date.now();
 const MINUTA = 60 * 1000;
 const DZIEN = 24 * 60 * 60 * 1000;
 
-// ====== CZAS OBECNOŚCI NA STRONIE (1 MINUTA) ======
+// ====== 1 MINUTA OBECNOŚCI ======
 let startSesji = localStorage.getItem('startSesji');
 
 if (!startSesji) {
@@ -73,15 +76,15 @@ if (TERAZ - startSesji >= MINUTA) {
   }, MINUTA - (TERAZ - startSesji));
 }
 
-// ====== LOGIKA JEDNEGO PYTANIA NA 24H ======
+// ====== JEDNO PYTANIE NA 24H ======
 const zapis = JSON.parse(localStorage.getItem('dailyQuestion'));
 
 if (zapis && TERAZ - zapis.time < DZIEN) {
   kafelki.forEach(k => {
     if (k.dataset.id === zapis.id) {
-      k.textContent = "To jest Twoje pytanie na dziś.";
+      k.textContent = k.dataset.question;
     } else {
-      k.textContent = "Wróć jutro, aby odkryć kolejne pytanie ⏳";
+      k.textContent = "🔒 Zamknięte do jutra";
     }
     k.classList.add('zablokowany');
   });
@@ -103,9 +106,9 @@ kafelki.forEach(k => {
 
       kafelki.forEach(other => {
         if (other === k) {
-          other.textContent = "To jest Twoje pytanie na dziś.";
+          other.textContent = other.dataset.question;
         } else {
-          other.textContent = "Za późno — kolejne pytanie dopiero jutro.";
+          other.textContent = "🔒 Zamknięte do jutra";
         }
         other.classList.add('zablokowany');
       });
@@ -113,7 +116,7 @@ kafelki.forEach(k => {
   });
 });
 
-// ====== FUNKCJA BLOKUJĄCA ======
+// ====== BLOKADA ======
 function zablokujStrone(tekst) {
   naglowek.textContent = tekst;
   kafelki.forEach(k => {
@@ -124,4 +127,5 @@ function zablokujStrone(tekst) {
 
 </body>
 </html>
+
 
