@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Odkryj swoje pytanie</title>
+
 <style>
 body {
   font-family: sans-serif;
@@ -22,6 +23,10 @@ body {
   transition: background 0.3s;
 }
 
+.kafelek:hover {
+  background: #2980b9;
+}
+
 .kafelek.zablokowany {
   background: #7f8c8d;
   cursor: not-allowed;
@@ -29,9 +34,10 @@ body {
 }
 </style>
 </head>
+
 <body>
 
-<h2>Możesz odkryć tylko jedno pytanie.</h2>
+<h2 id="naglowek">Możesz odkryć tylko jedno pytanie dziennie.</h2>
 
 <div class="kafelek" data-id="1">Gdybyś miała/miał opisać te 4 lata jednym słowem – jakie by to było i dlaczego?</div>
 <div class="kafelek" data-id="2">Jak to się zaczęło i dlaczego się zaczęło?</div>
@@ -45,38 +51,77 @@ body {
 
 <script>
 const kafelki = document.querySelectorAll('.kafelek');
-const wybrany = localStorage.getItem('wybranyKafelek');
+const naglowek = document.getElementById('naglowek');
 
-// jeśli już wybrał wcześniej
-if (wybrany) {
+const TERAZ = Date.now();
+const MINUTA = 60 * 1000;
+const DZIEN = 24 * 60 * 60 * 1000;
+
+// ====== CZAS OBECNOŚCI NA STRONIE (1 MINUTA) ======
+let startSesji = localStorage.getItem('startSesji');
+
+if (!startSesji) {
+  localStorage.setItem('startSesji', TERAZ);
+  startSesji = TERAZ;
+}
+
+if (TERAZ - startSesji >= MINUTA) {
+  zablokujStrone("Czas minął. Wróć jutro ⏳");
+} else {
+  setTimeout(() => {
+    zablokujStrone("Czas minął. Wróć jutro ⏳");
+  }, MINUTA - (TERAZ - startSesji));
+}
+
+// ====== LOGIKA JEDNEGO PYTANIA NA 24H ======
+const zapis = JSON.parse(localStorage.getItem('dailyQuestion'));
+
+if (zapis && TERAZ - zapis.time < DZIEN) {
   kafelki.forEach(k => {
-    if (k.dataset.id === wybrany) {
-      k.textContent = "To jest Twoje pytanie. Reszta została zamknięta.";
+    if (k.dataset.id === zapis.id) {
+      k.textContent = "To jest Twoje pytanie na dziś.";
     } else {
-      k.textContent = "Nie możesz już otworzyć innych pytań.";
+      k.textContent = "Wróć jutro, aby odkryć kolejne pytanie ⏳";
     }
     k.classList.add('zablokowany');
   });
+} else {
+  localStorage.removeItem('dailyQuestion');
 }
 
-// kliknięcie
+// ====== KLIKNIĘCIE ======
 kafelki.forEach(k => {
   k.addEventListener('click', () => {
-    if (!localStorage.getItem('wybranyKafelek')) {
-      localStorage.setItem('wybranyKafelek', k.dataset.id);
+    if (!localStorage.getItem('dailyQuestion')) {
+      localStorage.setItem(
+        'dailyQuestion',
+        JSON.stringify({
+          id: k.dataset.id,
+          time: Date.now()
+        })
+      );
 
       kafelki.forEach(other => {
         if (other === k) {
-          other.textContent = "To jest Twoje pytanie. Reszta została zamknięta.";
+          other.textContent = "To jest Twoje pytanie na dziś.";
         } else {
-          other.textContent = "Za późno — można było wybrać tylko jedno.";
+          other.textContent = "Za późno — kolejne pytanie dopiero jutro.";
         }
         other.classList.add('zablokowany');
       });
     }
   });
 });
+
+// ====== FUNKCJA BLOKUJĄCA ======
+function zablokujStrone(tekst) {
+  naglowek.textContent = tekst;
+  kafelki.forEach(k => {
+    k.classList.add('zablokowany');
+  });
+}
 </script>
 
 </body>
 </html>
+
