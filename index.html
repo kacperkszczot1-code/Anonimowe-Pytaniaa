@@ -40,7 +40,7 @@ body {
 
 <body>
 
-<h2 id="naglowek">Możesz odkryć tylko jedno pytanie dziennie.</h2>
+<h2 id="naglowek">Możesz odkryć tylko jedno pytanie.</h2>
 
 <div class="kafelek" data-id="1" data-question="Gdybyś miała/miał opisać te 4 lata jednym słowem – jakie by to było i dlaczego?">???</div>
 <div class="kafelek" data-id="2" data-question="Jak to się zaczęło i dlaczego się zaczęło?">???</div>
@@ -58,9 +58,9 @@ const naglowek = document.getElementById('naglowek');
 
 const TERAZ = Date.now();
 const MINUTA = 60 * 1000;
-const DZIEN = 24 * 60 * 60 * 1000;
+const CZTERY_GODZINY = 4 * 60 * 60 * 1000;
 
-// ====== 1 MINUTA OBECNOŚCI ======
+// ====== LIMIT 1 MINUTY NA STRONIE ======
 let startSesji = localStorage.getItem('startSesji');
 
 if (!startSesji) {
@@ -69,22 +69,22 @@ if (!startSesji) {
 }
 
 if (TERAZ - startSesji >= MINUTA) {
-  zablokujStrone("Czas minął. Wróć jutro ⏳");
+  zablokujStrone("Czas minął. Wróć później ⏳");
 } else {
   setTimeout(() => {
-    zablokujStrone("Czas minął. Wróć jutro ⏳");
+    zablokujStrone("Czas minął. Wróć później ⏳");
   }, MINUTA - (TERAZ - startSesji));
 }
 
-// ====== JEDNO PYTANIE NA 24H ======
+// ====== JEDNO PYTANIE NA 4 GODZINY ======
 const zapis = JSON.parse(localStorage.getItem('dailyQuestion'));
 
-if (zapis && TERAZ - zapis.time < DZIEN) {
+if (zapis && TERAZ - zapis.time < CZTERY_GODZINY) {
   kafelki.forEach(k => {
     if (k.dataset.id === zapis.id) {
       k.textContent = k.dataset.question;
     } else {
-      k.textContent = "🔒 Zamknięte do jutra";
+      k.textContent = "🔒 Zamknięte (spróbuj później)";
     }
     k.classList.add('zablokowany');
   });
@@ -92,7 +92,7 @@ if (zapis && TERAZ - zapis.time < DZIEN) {
   localStorage.removeItem('dailyQuestion');
 }
 
-// ====== KLIKNIĘCIE ======
+// ====== KLIKNIĘCIE KAFELKA ======
 kafelki.forEach(k => {
   k.addEventListener('click', () => {
     if (!localStorage.getItem('dailyQuestion')) {
@@ -108,7 +108,7 @@ kafelki.forEach(k => {
         if (other === k) {
           other.textContent = other.dataset.question;
         } else {
-          other.textContent = "🔒 Zamknięte do jutra";
+          other.textContent = "🔒 Zamknięte (spróbuj później)";
         }
         other.classList.add('zablokowany');
       });
@@ -116,7 +116,7 @@ kafelki.forEach(k => {
   });
 });
 
-// ====== BLOKADA ======
+// ====== FUNKCJA BLOKUJĄCA STRONĘ ======
 function zablokujStrone(tekst) {
   naglowek.textContent = tekst;
   kafelki.forEach(k => {
@@ -127,5 +127,6 @@ function zablokujStrone(tekst) {
 
 </body>
 </html>
+
 
 
